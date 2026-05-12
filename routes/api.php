@@ -11,3 +11,9 @@ Route::get('/user', function (Request $request) {
 Route::get('test', function () {
 return response()->json(['message' => 'OK']);
 });
+
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ItemController;
+
+Route::apiResource('categories', CategoryController::class);
+Route::apiResource('items', ItemController::class);
