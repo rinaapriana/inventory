@@ -7,32 +7,85 @@ use Illuminate\Http\Request;
 
 class ItemController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
-        return response()->json(Item::with('category')->get());
+        $items = Item::with('category')->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $items,
+            'message' => 'Items retrieved successfully'
+        ], 200);
     }
 
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
-        $item = Item::create($request->all());
-        return response()->json($item, 201);
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'stock' => 'required|integer|min:0',
+            'price' => 'required|numeric|min:0',
+        ]);
+
+        $item = Item::create($validated);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $item,
+            'message' => 'Item created successfully'
+        ], 201);
     }
 
-    public function show($id)
+    /**
+     * Display the specified resource.
+     */
+    public function show(Item $item)
     {
-        return response()->json(Item::with('category')->findOrFail($id));
+        return response()->json([
+            'status' => 'success',
+            'data' => $item,
+            'message' => 'Item retrieved successfully'
+        ], 200);
     }
 
-    public function update(Request $request, $id)
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Item $item)
     {
-        $item = Item::findOrFail($id);
-        $item->update($request->all());
-        return response()->json($item);
+        $validated = $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'category_id' => 'sometimes|required|exists:categories,id',
+            'stock' => 'sometimes|required|integer|min:0',
+            'price' => 'sometimes|required|numeric|min:0',
+        ]);
+
+        $item->update($validated);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $item,
+            'message' => 'Item updated successfully'
+        ], 200);
     }
 
-    public function destroy($id)
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Item $item)
     {
-        Item::destroy($id);
-        return response()->json(['message' => 'Deleted']);
+        $item->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => null,
+            'message' => 'Item deleted successfully'
+        ], 204);
     }
 }
