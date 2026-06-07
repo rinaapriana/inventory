@@ -1,4 +1,3 @@
-```php
 <?php
 
 namespace App\Http\Requests;
@@ -28,19 +27,10 @@ class StoreItemRequest extends FormRequest
     public function rules()
     {
         return [
-            "name" => "required|string|max:255",
-            "quantity" => "required|integer|min:0",
-            "price" => "required|numeric|min:0",
-            "category_id" => "required|exists:categories,id",
-        ];
-    }
-
-    public function messages()
-    {
-        return [
-            "name.required" => "Nama item wajib diisi.",
-            // ...
+            'name' => 'required|string|max:255',
+            'quantity' => 'required|integer|min:0',
+            'price' => 'required|numeric|min:0',
+            'category_id' => 'required|exists:categories,id',
         ];
     }
 }
-```

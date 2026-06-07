@@ -2,90 +2,54 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Item;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreItemRequest;
+use App\Http\Requests\UpdateItemRequest;
+use App\Services\ItemService;
+use App\Http\Controllers\Api\BaseController;
 
-class ItemController extends Controller
+class ItemController extends BaseController
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected ItemService $svc;
+
+    public function __construct(ItemService $svc)
+    {
+        $this->svc = $svc;
+    }
+
     public function index()
     {
-        $items = Item::with('category')->get();
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $items,
-            'message' => 'Items retrieved successfully'
-        ], 200);
+        return $this->success($this->svc->all());
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreItemRequest $req)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'stock' => 'required|integer|min:0',
-            'price' => 'required|numeric|min:0',
-        ]);
+        $item = $this->svc->create($req->validated());
 
-        $item = Item::create($validated);
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $item,
-            'message' => 'Item created successfully'
-        ], 201);
+        return $this->success($item, "Item dibuat", 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Item $item)
+    public function show($id)
     {
-        return response()->json([
-            'status' => 'success',
-            'data' => $item,
-            'message' => 'Item retrieved successfully'
-        ], 200);
+        try {
+            $item = $this->svc->find($id);
+
+            return $this->success($item);
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), 404);
+        }
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Item $item)
+    public function update(UpdateItemRequest $req, $id)
     {
-        $validated = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'category_id' => 'sometimes|required|exists:categories,id',
-            'stock' => 'sometimes|required|integer|min:0',
-            'price' => 'sometimes|required|numeric|min:0',
-        ]);
+        $item = $this->svc->update($id, $req->validated());
 
-        $item->update($validated);
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $item,
-            'message' => 'Item updated successfully'
-        ], 200);
+        return $this->success($item, "Item diperbarui");
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Item $item)
+    public function destroy($id)
     {
-        $item->delete();
+        $this->svc->delete($id);
 
-        return response()->json([
-            'status' => 'success',
-            'data' => null,
-            'message' => 'Item deleted successfully'
-        ], 204);
+        return $this->success(null, "Item dihapus", 204);
     }
 }

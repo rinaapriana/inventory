@@ -1,51 +1,33 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Requests;
 
-use App\Http\Requests\StoreCategoryRequest;
-use App\Http\Requests\UpdateCategoryRequest;
-use App\Services\CategoryService;
-use App\Http\Controllers\Api\BaseController;
+use Illuminate\Foundation\Http\FormRequest;
 
-class CategoryController extends BaseController
+class StoreCategoryRequest extends FormRequest
 {
-    protected CategoryService $svc;
-
-    public function __construct(CategoryService $svc)
+    public function authorize()
     {
-        $this->svc = $svc;
+        return true;
     }
 
-    public function index()
+    protected function prepareForValidation()
     {
-        return $this->success($this->svc->all());
+        $input = $this->all();
+
+        array_walk($input, function (&$val) {
+            if (is_string($val)) {
+                $val = trim(strip_tags($val));
+            }
+        });
+
+        $this->merge($input);
     }
 
-    public function store(StoreCategoryRequest $req)
+    public function rules()
     {
-        $cat = $this->svc->create($req->validated());
-        return $this->success($cat, "Kategori dibuat", 201);
-    }
-
-    public function show($id)
-    {
-        try {
-            $cat = $this->svc->find($id);
-            return $this->success($cat);
-        } catch (\Exception $e) {
-            return $this->error($e->getMessage(), 404);
-        }
-    }
-
-    public function update(UpdateCategoryRequest $req, $id)
-    {
-        $cat = $this->svc->update($id, $req->validated());
-        return $this->success($cat, "Kategori diperbarui");
-    }
-
-    public function destroy($id)
-    {
-        $this->svc->delete($id);
-        return $this->success(null, "Kategori dihapus", 204);
+        return [
+            'name' => 'required|string|max:255',
+        ];
     }
 }

@@ -1,74 +1,137 @@
 # Inventory System API v1
 
-Base URL: `http://localhost:8000/api/v1`
+Base URL:
+http://localhost:8000/api/v1
 
-## Auth
+## Authentication
+
+### Register
 
 POST /register
 
 Body:
-{
-    name,
-    email,
-    password,
-    password_confirmation
-}
 
-Response: 201 Created
-
+```json
 {
-    "status": "success",
-    "data": {
-        "user": ...,
-        "token": ...
-    },
-    "message": "User registered"
+  "name": "Rina",
+  "email": "rina@gmail.com",
+  "password": "password",
+  "password_confirmation": "password"
 }
+```
+
+Response:
+
+```json
+{
+  "success": true,
+  "message": "User registered",
+  "data": {
+    "user": {},
+    "token": "token"
+  }
+}
+```
+
+### Login
 
 POST /login
 
 Body:
-{
-    email,
-    password
-}
 
-...
+```json
+{
+  "email": "rina@gmail.com",
+  "password": "password"
+}
+```
+
+Response:
+
+```json
+{
+  "success": true,
+  "message": "Login berhasil",
+  "data": {
+    "token": "token"
+  }
+}
+```
+
+---
 
 ## Categories
 
-GET /categories
+### GET /categories
 
-POST /categories
+Header:
+
+Authorization: Bearer {token}
+
+### POST /categories
+
+Body:
+
+```json
 {
-    name
+  "name": "Elektronik"
 }
+```
 
-GET /categories/{id}
+### GET /categories/{id}
 
-PUT /categories/{id}
+### PUT /categories/{id}
+
+Body:
+
+```json
 {
-    name
+  "name": "Elektronik Update"
 }
+```
 
-DELETE /categories/{id}
-(admin only)
+### DELETE /categories/{id}
+
+(Admin Only)
+
+---
 
 ## Items
 
-GET /items
+### GET /items
 
-POST /items
+Header:
+
+Authorization: Bearer {token}
+
+### POST /items
+
+Body:
+
+```json
 {
-    name,
-    quantity,
-    price,
-    category_id
+  "name": "Laptop",
+  "quantity": 10,
+  "price": 12000000,
+  "category_id": 1
 }
+```
 
-GET /items/{id}
+### GET /items/{id}
 
-PUT /items/{id}
+### PUT /items/{id}
 
-DELETE /items/{id}
-(admin only)
+Body:
+
+```json
+{
+  "name": "Laptop Gaming",
+  "quantity": 15,
+  "price": 15000000,
+  "category_id": 1
+}
+```
+
+### DELETE /items/{id}
+
+(Admin Only)
