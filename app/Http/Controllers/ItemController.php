@@ -4,19 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\Item;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class ItemController extends Controller
 {
-    public function index()
-    {
-        return response()->json(Item::with('category')->get());
+public function all(?int $categoryId = null): Collection
+{
+    $query = Item::with('category');
+
+    if (!is_null($categoryId) && $categoryId !== '') {
+        $query->where('category_id', $categoryId);
     }
 
-    public function store(Request $request)
-    {
-        $item = Item::create($request->all());
-        return response()->json($item, 201);
-    }
+    return $query->get();
+}
+    
 
     public function show($id)
     {
