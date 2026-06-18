@@ -1,0 +1,39 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\Item;
+use Illuminate\Database\Eloquent\Collection;
+
+class ItemService {
+    public function all(?int $categoryId = null): Collection
+{
+    $query = Item::with('category');
+
+    if (!is_null($categoryId) && $categoryId !== '') {
+        $query->where('category_id', $categoryId);
+    }
+
+    return $query->get();
+}
+
+    public function find(int $id): Item{
+        return Item::with('category')->findOrFail($id); 
+    }
+
+    public function create(array $data): Item {
+        return Item::create($data); 
+    }
+
+    public function update(int $id, array $data): Item 
+    {
+        $item = Item::findOrFail($id); 
+        $item->update($data); 
+        return $item; 
+    }
+
+    public function delete(int $id): void 
+    {
+        Item::destroy($id); 
+    }
+}

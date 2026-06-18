@@ -4,19 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Models\Item;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class ItemController extends Controller
 {
-    public function index()
-    {
-        return response()->json(Item::with('category')->get());
+public function index(Request $request): JsonResponse
+{
+    $query = Item::with('category');
+
+    if ($request->has('category_id')) {
+        $query->where('category_id', $request->category_id);
     }
 
-    public function store(Request $request)
-    {
-        $item = Item::create($request->all());
-        return response()->json($item, 201);
-    }
+    $items = $query->get();
+
+    return response()->json([
+        'message' => 'Berhasil menarik semua data Item',
+        'data' => $items
+    ]);
+}
 
     public function show($id)
     {
