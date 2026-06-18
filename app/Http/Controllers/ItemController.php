@@ -8,21 +8,17 @@ use Illuminate\Http\JsonResponse;
 
 class ItemController extends Controller
 {
-public function index(Request $request): JsonResponse
+public function all(?int $categoryId = null): Collection
 {
     $query = Item::with('category');
 
-    if ($request->has('category_id')) {
-        $query->where('category_id', $request->category_id);
+    if (!is_null($categoryId) && $categoryId !== '') {
+        $query->where('category_id', $categoryId);
     }
 
-    $items = $query->get();
-
-    return response()->json([
-        'message' => 'Berhasil menarik semua data Item',
-        'data' => $items
-    ]);
+    return $query->get();
 }
+    
 
     public function show($id)
     {
