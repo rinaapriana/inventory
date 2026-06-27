@@ -8,17 +8,28 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
         api: __DIR__.'/../routes/api.php',
+        apiPrefix: 'api',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
 
+HEAD
         // Rate Limiting API
         $middleware->api(prepend: [
             'throttle:60,1',
+
+        $middleware->alias([
+            'role' => \App\Http\Middleware\RoleMiddleware::class,
+origin/feature/auth-sanctum
         ]);
 
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
+HEAD
     })->create();
+=======
+    })
+    ->create();
+origin/feature/auth-sanctum
