@@ -2,39 +2,78 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Item;
+use App\Services\ItemService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 class ItemController extends Controller
 {
-public function all(?int $categoryId = null): Collection
-{
-    $query = Item::with('category');
+    protected ItemService $itemService;
 
-    if (!is_null($categoryId) && $categoryId !== '') {
-        $query->where('category_id', $categoryId);
+    public function __construct(ItemService $itemService)
+    {
+        $this->itemService = $itemService;
     }
 
-    return $query->get();
-}
-    
-
-    public function show($id)
+    // GET /api/items
+    public function index(Request $request): JsonResponse
     {
-        return response()->json(Item::with('category')->findOrFail($id));
+        $items = $this->itemService->all($request->category_id);
+
+        return response()->json($items);
     }
 
-    public function update(Request $request, $id)
+    // GET /api/items/{id}
+    public function show($id): JsonResponse
     {
-        $item = Item::findOrFail($id);
-        $item->update($request->all());
+        $item = $this->itemService->find($id);
+
         return response()->json($item);
     }
 
-    public function destroy($id)
+    // POST /api/items
+    public function store(Request $request): JsonResponse
     {
-        Item::destroy($id);
-        return response()->json(['message' => 'Deleted']);
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'price' => 'required|numeric',
+            'category_id' => 'required|exists:categories,id',
+        ]);
+
+        $item = $this->itemService->create($request->all());
+
+        return response()->json([
+            'message' => 'Item berhasil ditambahkan',
+            'data' => $item
+        ], 201);
+    }
+
+    // PUT /api/items/{id}
+    public function update(Request $request, $id): JsonResponse
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'price' => 'required|numeric',
+            'category_id' => 'required|exists:categories,id',
+        ]);
+
+        $item = $this->itemService->update($id, $request->all());
+
+        return response()->json([
+            'message' => 'Item berhasil diperbarui',
+            'data' => $item
+        ]);
+    }
+
+    // DELETE /api/items/{id}
+    public function destroy($id): JsonResponse
+    {
+        $this->itemService->delete($id);
+
+        return response()->json([
+            'message' => 'Item berhasil dihapus'
+        ]);
     }
 }
