@@ -14,7 +14,6 @@ class Item extends Model
         'name',
         'description',
         'price',
-HEAD
         'stock',
         'category_id'
     ];
@@ -22,9 +21,5 @@ HEAD
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
-    
-
-        'stock'
-    ];
->>>>>>> origin/feature/auth-sanctum
+    }
 }

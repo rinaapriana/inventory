@@ -14,22 +14,18 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
 
-HEAD
         // Rate Limiting API
         $middleware->api(prepend: [
             'throttle:60,1',
+        ]);
 
+        // Middleware Alias
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
-origin/feature/auth-sanctum
         ]);
 
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
-HEAD
-    })->create();
-=======
     })
     ->create();
-origin/feature/auth-sanctum
